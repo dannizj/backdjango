@@ -4,6 +4,7 @@ from main.models import User
 from main.models import Article
 from main.validator import ArticleValidatorForm
 from main.serializers import ArticleSerializer
+from django.core.paginator import Paginator
 import json
 
 @csrf_exempt
@@ -85,34 +86,67 @@ def getArticle(request, id):
     return JsonResponse(dataResponse)
 
 @csrf_exempt
-def getArticles(request):
-    if request.method == "POST":
-        nombre = "Dani zj web"
+def getArticles(request, page):
+    if request.method == "GET":
 
-        return JsonResponse({
-            "status": "success",
-            "accion": "Get Articles"
-        })
+        itemsPerPage = 5
+    
+        try:
+            allArticle = Article.objects.all()
+            paginator = Paginator(allArticle, itemsPerPage)
+            articlesPerPage = paginator.page(page)
+            pageObj = paginator.get_page(page)
+
+            articles = ArticleSerializer(articlesPerPage, many=True)
+    
+            dataResponse ={
+                "status": "success",
+                "articles": articles.data,
+                "itemsPerPage": itemsPerPage,
+                "pages": pageObj.paginator.num_pages,
+                "totalArticles": len(allArticle)
+            }
+    
+        except Exception as e:
+            dataResponse ={
+                "status": "error",
+                "message": str(e)
+            }
+    
     else:
-        return JsonResponse({
+        dataResponse ={
             "status": "error",
             "message": "El metodo http es incorrecto" 
-        })
+        }
+    
+    return JsonResponse(dataResponse)
 
 @csrf_exempt
-def delete(request):
-    if request.method == "POST":
-        nombre = "Dani zj web"
-
-        return JsonResponse({
-            "status": "success",
-            "accion": "Delete Article"
-        })
+def delete(request, id):
+    if request.method == "DELETE":
+    
+        try:
+            article = Article.objects.get(id=id)
+            article.delete()
+            articleS = ArticleSerializer(article, many=False)
+    
+            dataResponse ={
+                "status": "success",
+                "article": articleS.data
+            }
+    
+        except Exception as e:
+            dataResponse ={
+                "status": "error",
+                "message": str(e)
+        }
+    
     else:
-        return JsonResponse({
+        dataResponse ={
             "status": "error",
             "message": "El metodo http es incorrecto" 
-        })
+        }
+    return JsonResponse(dataResponse)
 
 @csrf_exempt
 def getArticleByUser(request):
