@@ -9,3 +9,8 @@ class UserValidatorForm(forms.Form):
     email = forms.EmailField(required=True)
     bio = forms.CharField(required=False)
     password = forms.CharField(required=True)
+
+class ArticleValidatorForm(forms.Form):
+    title = forms.CharField(max_length=150, min_length=3, required=True)
+    content = forms.CharField(required=True)
+    

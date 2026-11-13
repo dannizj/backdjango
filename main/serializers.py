@@ -13,3 +13,17 @@ class UserSerializer(serializers.ModelSerializer):
             'bio',
             'created_at'
         ]
+
+class ArticleSerializer(serializers.ModelSerializer):
+
+    user = UserSerializer()
+
+    class Meta:
+        model = Article
+        fields = [
+            'id',
+            'title',
+            'content', 
+            'user',
+            'created_at'
+        ]

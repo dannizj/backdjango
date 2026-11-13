@@ -73,9 +73,6 @@ def save(request):
             "status": "error",
             "message": "El metodo http es incorrecto" 
         })
-    
-
-      
 
 @csrf_exempt
 def login(request):
