@@ -149,16 +149,20 @@ def delete(request, id):
     return JsonResponse(dataResponse)
 
 @csrf_exempt
-def getArticleByUser(request):
-    if request.method == "POST":
-        nombre = "Dani zj web"
+def getArticlesByUser(request, userId):
+    if request.method == "GET":
 
-        return JsonResponse({
+        articles = Article.objects.filter( user = userId)
+        articlesS = ArticleSerializer(articles, many=True)
+
+        data = {
             "status": "success",
-            "accion": "Get Article By User"
-        })
+            "articles": articlesS.data
+        }
     else:
-        return JsonResponse({
+        data ={
             "status": "error",
             "message": "El metodo http es incorrecto" 
-        })
+        }
+
+    return JsonResponse(data)
