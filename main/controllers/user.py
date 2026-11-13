@@ -138,16 +138,34 @@ def login(request):
         })
 
 @csrf_exempt
-def profile(request):
-    if request.method == "POST":
-        nombre = "Dani zj web"
+def profile(request, id):
+    if request.method == "GET":
 
-        return JsonResponse({
-            "status": "success",
-            "accion": "Profile"
-        })
+        if id:
+            try:
+                user = User.objects.get(id=id)
+                userS = UserSerializer(user, many=False)
+                
+                data = {
+                    "status": "success",
+                    "user": userS.data
+                }
+
+            except Exception as e:
+                data = {
+                    "status": "error",
+                    "accion": "Error al sacar al usuario de la bd"
+                }                
+        else:
+            data = {
+                "status": "error",
+                "message": "El Id no a llegado" 
+            }
+        
     else:
-        return JsonResponse({
+        data = {
             "status": "error",
             "message": "El metodo http es incorrecto" 
-        })
+        }
+    
+    return JsonResponse(data)
